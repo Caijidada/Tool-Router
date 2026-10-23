@@ -1,3 +1,3 @@
-import { projectStatus } from "./index.js";
+import { runOfflineDemo } from "./demo.js";
 
-console.log(JSON.stringify(projectStatus, null, 2));
+console.log(JSON.stringify(runOfflineDemo(), null, 2));
