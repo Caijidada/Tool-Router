@@ -24,6 +24,7 @@ demo 使用人工工具描述和模拟状态，展示：推荐查看差异、过
 | 简单中英文词法召回、稳定排序、并列拒选             | 已实现，不具备语义理解     |
 | 显式允许名单、ready/missing/unknown 状态、版本回执 | 已实现，来自可信应用配置   |
 | DecisionProvider 接口                              | 已定义，尚未连接到路由流程 |
+| 评分器输出结构与候选成员校验                       | 已实现独立解析器           |
 | Jev 请求、置信度门限、超时/取消与回退              | 尚未实现                   |
 | MCP 转发、真实工具执行、参数级授权、REA 适配       | 尚未实现                   |
 
@@ -42,6 +43,7 @@ demo 使用人工工具描述和模拟状态，展示：推荐查看差异、过
 - [架构与边界](docs/architecture.md)
 - [目录快照](docs/catalog.md)
 - [离线路由规则与限制](docs/offline-routing.md)
+- [评分器输出校验](docs/provider-output.md)
 - [分阶段计划](docs/roadmap.md)
 - [小步开发与提交规则](CONTRIBUTING.md)
 - [开发记录](docs/development-log.md)

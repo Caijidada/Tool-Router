@@ -25,3 +25,4 @@ export type {
   DecisionProvider,
   ProviderDecision,
 } from "./decision-provider.js";
+export { parseProviderDecision, ProviderOutputError } from "./provider-output.js";
