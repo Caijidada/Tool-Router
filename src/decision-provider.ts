@@ -1,4 +1,4 @@
-/** Contract for the next milestone; no model requests are made by the offline router. */
+/** Minimal metadata sent to an explicitly configured, trusted provider implementation. */
 export interface DecisionCandidate {
   readonly toolId: string;
   readonly name: string;

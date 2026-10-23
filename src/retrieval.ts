@@ -35,11 +35,16 @@ export function retrieveCandidates(
   query: string,
   limit = 8,
 ): readonly Candidate[] {
-  if (typeof query !== "string" || query.trim().length === 0 || query.length > MAX_QUERY_LENGTH) {
-    throw new RangeError("Query must be nonblank and at most 4000 UTF-16 code units");
-  }
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
     throw new RangeError("Candidate limit must be an integer from 1 to 50");
+  }
+  return Object.freeze(rankCandidates(tools, query).slice(0, limit));
+}
+
+/** Internal full ranking; the router bounds its input through the catalog snapshot. */
+export function rankCandidates(tools: readonly CatalogTool[], query: string): readonly Candidate[] {
+  if (typeof query !== "string" || query.trim().length === 0 || query.length > MAX_QUERY_LENGTH) {
+    throw new RangeError("Query must be nonblank and at most 4000 UTF-16 code units");
   }
   const queryTokens = tokens(query);
   const candidates: Candidate[] = [];
@@ -60,5 +65,5 @@ export function retrieveCandidates(
       right.lexicalScore - left.lexicalScore ||
       (left.tool.id < right.tool.id ? -1 : left.tool.id > right.tool.id ? 1 : 0),
   );
-  return Object.freeze(candidates.slice(0, limit));
+  return Object.freeze(candidates);
 }

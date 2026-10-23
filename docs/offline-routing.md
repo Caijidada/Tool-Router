@@ -21,7 +21,7 @@ routeTools 接收 query、CatalogSnapshot、可信 RoutingPolicy 和可信 Routi
 - 只搜索 name/description，不扫描完整 Schema 或用户源码。
 - policy 过滤后仍可能选到词项相似但语义不合适的合法工具；这正是后续 Jev 实验要测量的问题。
 - 不生成前置步骤、不验证资源真实性、不检查实际调用参数、不执行工具。
-- DecisionProvider 目前只是下一阶段接口。尚无外部模型故障恢复、取消或超时实现，不对这些能力作承诺。
+- 本页的同步 routeTools 不调用评分器；异步 routeWithProvider 的校验、等待超时、取消与受限回退详见 [S3 编排](provider-routing.md)。尚无真实 Jev HTTP 实现。
 
 ## 验证
 

@@ -1,5 +1,5 @@
 import type { CatalogSnapshot } from "./catalog.js";
-import { retrieveCandidates } from "./retrieval.js";
+import { rankCandidates } from "./retrieval.js";
 
 /** Supplied by trusted application code, never by the model or tool descriptions. */
 export interface RoutingPolicy {
@@ -81,6 +81,14 @@ function snapshotReadiness(state: RoutingState, id: string): ToolReadiness {
  * Missing prerequisites are surfaced, not automatically planned or fulfilled.
  */
 export function routeTools(request: RouteRequest): RouteDecision {
+  return prepareRoute(request).decision;
+}
+
+/** Shared immutable preparation; full ranking is not exposed through the display limit. */
+export function prepareRoute(request: RouteRequest): {
+  readonly decision: RouteDecision;
+  readonly candidates: readonly RouteCandidate[];
+} {
   assertRevision(request.policy.revision, "policy");
   assertRevision(request.state.revision, "state");
   if (
@@ -99,7 +107,7 @@ export function routeTools(request: RouteRequest): RouteDecision {
   }
   const permitted = request.catalog.tools.filter((tool) => allowed.has(tool.id));
   // Score all permitted tools before truncation, so limit=1 cannot conceal a tie.
-  const ranked = retrieveCandidates(permitted, request.query, 50);
+  const ranked = rankCandidates(permitted, request.query);
   const limit = request.limit ?? 8;
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
     throw new RangeError("Candidate limit must be an integer from 1 to 50");
@@ -127,15 +135,18 @@ export function routeTools(request: RouteRequest): RouteDecision {
   const abstain = (
     reason: Extract<RouteDecision, { kind: "abstained" }>["reason"],
   ): RouteDecision => Object.freeze({ ...context, kind: "abstained", reason });
-  if (permitted.length === 0) return abstain("no_allowed_tools");
-  if (top.length === 0) return abstain("no_match");
-  // Do not silently substitute a weaker ready tool for the best unavailable match.
-  if (top.some((candidate) => candidate.readiness.kind === "unknown"))
-    return abstain("state_unknown");
-  if (top.some((candidate) => candidate.readiness.kind === "missing"))
-    return abstain("needs_prerequisites");
-  if (top.length > 1) return abstain("ambiguous");
-  const winner = top[0];
-  if (!winner) return abstain("no_match");
-  return Object.freeze({ ...context, kind: "selected", toolId: winner.toolId });
+  const choose = (): RouteDecision => {
+    if (permitted.length === 0) return abstain("no_allowed_tools");
+    if (top.length === 0) return abstain("no_match");
+    // Do not silently substitute a weaker ready tool for the best unavailable match.
+    if (top.some((candidate) => candidate.readiness.kind === "unknown"))
+      return abstain("state_unknown");
+    if (top.some((candidate) => candidate.readiness.kind === "missing"))
+      return abstain("needs_prerequisites");
+    if (top.length > 1) return abstain("ambiguous");
+    const winner = top[0];
+    if (!winner) return abstain("no_match");
+    return Object.freeze({ ...context, kind: "selected", toolId: winner.toolId });
+  };
+  return Object.freeze({ decision: choose(), candidates: Object.freeze(candidates) });
 }

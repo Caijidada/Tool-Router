@@ -1,7 +1,7 @@
 export const projectStatus = Object.freeze({
   name: "agent-tool-router",
   version: "0.1.0",
-  mode: "offline-routing-baseline",
+  mode: "offline-provider-framework",
   executesTools: false,
   makesModelRequests: false,
 } as const);
@@ -26,3 +26,9 @@ export type {
   ProviderDecision,
 } from "./decision-provider.js";
 export { parseProviderDecision, ProviderOutputError } from "./provider-output.js";
+export { routeWithProvider } from "./provider-routing.js";
+export type {
+  ProviderRouteDecision,
+  ProviderRouteOptions,
+  ProviderStatus,
+} from "./provider-routing.js";

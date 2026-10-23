@@ -17,7 +17,8 @@
     "check": "npm run typecheck && npm test && npm run format:check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "demo": "npm run build && node dist/src/cli.js"
+    "demo": "npm run build && node dist/src/cli.js",
+    "demo:provider": "npm run build && node dist/src/provider-cli.js"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
